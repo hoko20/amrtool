@@ -89,7 +89,17 @@ struct ContentView: View {
             .onChange(of: videoItem) { _, item in
                 guard let item else { return }
                 videoItem = nil
-                model.convert(pickedItem: item)
+                Task {
+                    do {
+                        if let movie = try await item.loadTransferable(type: MovieFile.self) {
+                            model.convert(urls: [movie.url])
+                        } else {
+                            model.errorText = "无法从相册读取这个视频"
+                        }
+                    } catch {
+                        model.errorText = "相册读取失败：\(error.localizedDescription)"
+                    }
+                }
             }
         }
     }

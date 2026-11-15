@@ -1,6 +1,5 @@
 import Foundation
 import Observation
-import PhotosUI
 
 struct OutputFile: Identifiable, Hashable {
     let url: URL
@@ -79,33 +78,6 @@ final class ConversionModel {
             }
             currentName = ""
             busy = false
-        }
-    }
-
-    // MARK: - 来自相册
-
-    func convert(pickedItem item: PhotosPickerItem) {
-        guard !busy else { return }
-        busy = true
-        progress = 0
-        errorText = nil
-        statusText = "正在从相册读取视频…"
-
-        Task {
-            do {
-                guard let movie = try await item.loadTransferable(type: MovieFile.self) else {
-                    errorText = "无法从相册读取这个视频"
-                    statusText = "等待选择文件"
-                    busy = false
-                    return
-                }
-                busy = false
-                convert(urls: [movie.url])
-            } catch {
-                errorText = "相册读取失败：\(Self.describe(error))"
-                statusText = "等待选择文件"
-                busy = false
-            }
         }
     }
 
