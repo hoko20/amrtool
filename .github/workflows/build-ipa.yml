@@ -1,0 +1,75 @@
+name: Build AMR Converter IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode with an iOS 26+ SDK
+        run: |
+          set -euo pipefail
+          BEST=""; BESTMAJOR=0; BESTVER=""
+          for app in /Applications/Xcode_*.app; do
+            [ -d "$app" ] || continue
+            dev="$app/Contents/Developer"
+            v=$(DEVELOPER_DIR="$dev" xcrun --sdk iphoneos --show-sdk-version 2>/dev/null || echo "0")
+            major=${v%%.*}
+            echo "$app -> iOS SDK $v"
+            if [[ "$major" =~ ^[0-9]+$ ]] && [ "$major" -ge 26 ] && [ "$major" -ge "$BESTMAJOR" ]; then
+              BEST="$dev"; BESTMAJOR="$major"; BESTVER="$v"
+            fi
+          done
+          if [ -n "$BEST" ]; then
+            echo "DEVELOPER_DIR=$BEST" >> "$GITHUB_ENV"
+            echo "DEPLOYMENT_TARGET=26.0" >> "$GITHUB_ENV"
+            echo "Selected $BEST (iOS SDK $BESTVER)"
+          else
+            CURRENT=$(xcrun --sdk iphoneos --show-sdk-version)
+            echo "DEPLOYMENT_TARGET=$CURRENT" >> "$GITHUB_ENV"
+            echo "::warning::No iOS 26+ SDK on this runner; falling back to $CURRENT"
+          fi
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          echo "SDK: $(xcrun --sdk iphoneos --show-sdk-path)"
+          echo "SDK version: $(xcrun --sdk iphoneos --show-sdk-version)"
+          echo "Deployment target: ${DEPLOYMENT_TARGET:-26.0}"
+
+      - name: Build opencore-amr (AMR-NB encoder)
+        run: bash scripts/build-opencore-amr.sh
+
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install xcodegen
+          fi
+          xcodegen --version
+
+      - name: Build and package IPA
+        run: bash scripts/build-ipa.sh
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AMRConverter-IPA
+          path: |
+            build/*.ipa
+            build/*.ipa.sha256
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,5 @@
+build/
+Vendor/lib/
+Vendor/include/
+*.xcodeproj/
+.DS_Store
