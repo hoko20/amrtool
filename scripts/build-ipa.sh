@@ -10,6 +10,7 @@ ROOT="$PWD"
 DERIVED="$ROOT/build/derived"
 STAGE="$ROOT/build/stage"
 APPNAME="AMRConverter.app"
+BINARY="AMRConverter"
 IPA="$ROOT/build/AMRConverter-unsigned.ipa"
 
 if [ ! -f "$ROOT/Vendor/lib/libopencore-amrnb.a" ]; then
@@ -52,8 +53,8 @@ rm -rf "$STAGE"
 mkdir -p "$STAGE/Payload"
 cp -R "$PRODUCT" "$STAGE/Payload/$APPNAME"
 
-# 目标架构检查
-lipo -info "$STAGE/Payload/$APPNAME/$APPNAME"
+# 目标架构检查（.app 内部的 Mach-O 与 .app 同名，不带 .app 后缀）
+lipo -info "$STAGE/Payload/$APPNAME/$BINARY"
 
 # adhoc 签名：方便部分安装器识别，普通真机安装仍需重签
 if codesign --force --sign - --timestamp=none "$STAGE/Payload/$APPNAME" 2>/dev/null; then
