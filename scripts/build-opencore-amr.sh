@@ -74,7 +74,8 @@ WB_SRC="$WORK/vo-amrwbenc-${WB_VER}"
 mkdir -p "$WORK/wbobj"
 
 # 直接手编：configure 会给 arm64 加上 -DARM -DARMV7 -DASM_OPT，导致 32 位汇编分支报错
-for source in "$WB_SRC/wrapper.c" "$WB_SRC"/amrwbenc/src/*.c; do
+# common/cmnMemory.c 提供 cmnMemoryAlloc/Free/Copy 等符号，wrapper.c 依赖它们
+for source in "$WB_SRC/wrapper.c" "$WB_SRC/common/cmnMemory.c" "$WB_SRC"/amrwbenc/src/*.c; do
   "$CLANG" -c $ARCH_FLAGS -O2 -fPIC \
     -I"$WB_SRC/amrwbenc/inc" \
     -I"$WB_SRC/common/include" \
