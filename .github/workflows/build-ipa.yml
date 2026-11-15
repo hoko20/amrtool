@@ -20,6 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Normalize shell scripts to LF
+        run: |
+          find . -name "*.sh" -print0 | xargs -0 sed -i '' 's/\r$//'
+          chmod +x scripts/*.sh
+          file scripts/*.sh
+
       - name: Select Xcode with an iOS 26+ SDK
         run: |
           set -euo pipefail
