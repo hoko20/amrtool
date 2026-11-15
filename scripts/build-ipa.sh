@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # 在 macOS runner 上生成工程、编译并打包无签名 IPA（可交给 AltStore / SideStore / 自签工具重签）。
 set -euo pipefail
+
+# 同上：避免 bash 3.2 在非 UTF-8 locale 下解析中文旁变量出错。
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
 DERIVED="$ROOT/build/derived"

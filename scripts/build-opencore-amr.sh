@@ -6,6 +6,10 @@
 # 编码器实现位于 opencore/codecs_v2/audio/gsm_amr/ 下，必须走 configure + make。
 set -euo pipefail
 
+# macOS 自带 bash 3.2 在非 UTF-8 locale 下会把中文标点误并进变量名，这里强制 UTF-8。
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENDOR="$ROOT/Vendor"
 WORK="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/opencore-amr-build"
@@ -36,7 +40,7 @@ if [ ! -f "$SRC/configure" ]; then
 fi
 echo "源码目录：$SRC"
 
-echo "== 配置交叉编译（arm64 / iOS $MIN_IOS）=="
+echo "== 配置交叉编译（arm64 / iOS ${MIN_IOS}）=="
 SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
 CLANG="$(xcrun --sdk iphoneos -f clang)"
 CLANGXX="$(dirname "$CLANG")/clang++"
