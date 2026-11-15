@@ -92,6 +92,7 @@ static const NSUInteger kAMRSamplesPerFrame = 160; // 20ms @ 8kHz
     short pcm[kAMRSamplesPerFrame];
     unsigned char frame[64];
     NSUInteger filled = 0;
+    NSUInteger encodedFrames = 0;
 
     while (reader.status == AVAssetReaderStatusReading) {
         @autoreleasepool {
@@ -113,6 +114,7 @@ static const NSUInteger kAMRSamplesPerFrame = 160; // 20ms @ 8kHz
                             if (size > 0) {
                                 [handle writeData:[NSData dataWithBytes:frame
                                                                  length:(NSUInteger)size]];
+                                encodedFrames++;
                             }
                             filled = 0;
                         }
@@ -138,6 +140,13 @@ static const NSUInteger kAMRSamplesPerFrame = 160; // 20ms @ 8kHz
         [manager removeItemAtURL:outputURL error:nil];
         [self fill:error code:AMREncoderErrorReader
            message:reader.error.localizedDescription ?: @"转换过程中读取失败"];
+        return NO;
+    }
+
+    if (encodedFrames == 0) {
+        [manager removeItemAtURL:outputURL error:nil];
+        [self fill:error code:AMREncoderErrorReader
+           message:@"没有解出任何音频数据，可能是纯视频（无音轨）或格式不被支持"];
         return NO;
     }
 

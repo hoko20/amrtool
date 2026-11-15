@@ -1,15 +1,18 @@
 import SwiftUI
 import UIKit
+import PhotosUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
     @State private var model = ConversionModel()
     @State private var picking = false
+    @State private var showingPhotos = false
+    @State private var videoItem: PhotosPickerItem?
     @State private var confirmClear = false
 
-    private static let allowedTypes: [UTType] = [
-        .audio, .movie, .mpeg4Movie, .mpeg4Audio, .mp3
-    ]
+    // 不按 UTI 过滤：第三方 App 存的 mp3 常常没有正确的 public.mp3 类型，
+    // 过滤会导致「打开」按钮变灰或点了没反应。选中后由编码器给出明确错误。
+    private static let allowedTypes: [UTType] = [.item]
 
     var body: some View {
         NavigationStack {
@@ -17,15 +20,15 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     summaryCard
 
-                    if let error = model.errorText {
-                        InlineNotice(text: error)
-                    }
-
                     SectionLabel(text: "输入")
                     inputCard
 
                     if model.busy {
                         progressCard
+                    }
+
+                    if let error = model.errorText {
+                        InlineNotice(text: error)
                     }
 
                     SectionLabel(text: "输出文件")
@@ -82,6 +85,12 @@ struct ContentView: View {
                 Button("全部删除", role: .destructive) { model.deleteAll() }
                 Button("取消", role: .cancel) { }
             }
+            .photosPicker(isPresented: $showingPhotos, selection: $videoItem, matching: .videos)
+            .onChange(of: videoItem) { _, item in
+                guard let item else { return }
+                videoItem = nil
+                model.convert(pickedItem: item)
+            }
         }
     }
 
@@ -108,7 +117,7 @@ struct ContentView: View {
                 ThinSeparator()
                     .padding(.vertical, 16)
 
-                Text(model.outputs.isEmpty ? "等待选择文件" : "共 \(model.outputs.count) 个 AMR 文件")
+                Text(model.statusText)
                     .font(.system(size: 14))
                     .foregroundStyle(Palette.secondary)
                     .lineLimit(1)
@@ -121,33 +130,22 @@ struct ContentView: View {
     private var inputCard: some View {
         CardBox(radius: 20, padding: 0) {
             VStack(spacing: 0) {
-                Button {
+                PickerRow(system: "doc.badge.plus",
+                          title: model.busy ? "转换中…" : "从「文件」选择",
+                          subtitle: "MP3 · MP4 · M4A · MOV · WAV，自动抽取音轨",
+                          disabled: model.busy) {
                     picking = true
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "doc.badge.plus")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(Palette.ink)
-                            .frame(width: 26)
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(model.busy ? "转换中…" : "选择音频或视频")
-                                .font(.system(size: 15, weight: .medium))
-                                .foregroundStyle(Palette.ink)
-                            Text("MP3 · MP4 · M4A · MOV · WAV，自动抽取音轨")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Palette.secondary)
-                        }
-                        Spacer(minLength: 6)
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Palette.tertiary)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
-                .disabled(model.busy)
+
+                ThinSeparator()
+                    .padding(.leading, 16)
+
+                PickerRow(system: "photo.on.rectangle",
+                          title: "从「相册」选择视频",
+                          subtitle: "相册里的 MP4 / MOV 视频",
+                          disabled: model.busy) {
+                    showingPhotos = true
+                }
 
                 ThinSeparator()
                     .padding(.leading, 16)
@@ -245,6 +243,44 @@ private struct OutputCard: View {
                 Label("删除", systemImage: "trash")
             }
         }
+    }
+}
+
+// MARK: - 输入行
+
+private struct PickerRow: View {
+    let system: String
+    let title: String
+    let subtitle: String
+    let disabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: system)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(Palette.ink)
+                    .frame(width: 26)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(Palette.ink)
+                    Text(subtitle)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Palette.secondary)
+                }
+                Spacer(minLength: 6)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Palette.tertiary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(disabled)
     }
 }
 

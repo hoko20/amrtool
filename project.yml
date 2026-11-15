@@ -43,6 +43,7 @@ targets:
     dependencies:
       - sdk: AVFoundation.framework
       - sdk: CoreMedia.framework
+      - sdk: PhotosUI.framework
       - sdk: UIKit.framework
 
 schemes:
