@@ -57,7 +57,7 @@ jobs:
           echo "SDK version: $(xcrun --sdk iphoneos --show-sdk-version)"
           echo "Deployment target: ${DEPLOYMENT_TARGET:-26.0}"
 
-      - name: Build opencore-amr (AMR-NB encoder)
+      - name: Build native codecs (AMR-NB / AMR-WB / SILK)
         run: bash scripts/build-opencore-amr.sh
 
       - name: Install XcodeGen

@@ -1,7 +1,6 @@
 import SwiftUI
 import UIKit
 import PhotosUI
-import UniformTypeIdentifiers
 
 struct ContentView: View {
     @State private var model = ConversionModel()
@@ -9,10 +8,8 @@ struct ContentView: View {
     @State private var showingPhotos = false
     @State private var videoItem: PhotosPickerItem?
     @State private var confirmClear = false
-
-    // 不按 UTI 过滤：第三方 App 存的 mp3 常常没有正确的 public.mp3 类型，
-    // 过滤会导致「打开」按钮变灰或点了没反应。选中后由编码器给出明确错误。
-    private static let allowedTypes: [UTType] = [.item]
+    @State private var renameItem: OutputFile?
+    @State private var renameText = ""
 
     var body: some View {
         NavigationStack {
@@ -34,18 +31,25 @@ struct ContentView: View {
                     SectionLabel(text: "输出文件")
 
                     if model.outputs.isEmpty {
-                        EmptyCard(text: "还没有输出文件。选择 MP3 或 MP4 后会自动生成 AMR。")
+                        EmptyCard(text: "还没有输出文件。选择 MP3 / MP4 或相册视频后会生成 \(model.format.title)。")
                     } else {
                         LazyVStack(spacing: 12) {
                             ForEach(model.outputs) { item in
-                                OutputCard(item: item) {
+                                SwipeActionRow(onRename: {
+                                    renameText = item.url.deletingPathExtension().lastPathComponent
+                                    renameItem = item
+                                }, onDelete: {
                                     model.delete(item)
+                                }) {
+                                    OutputCard(item: item) {
+                                        model.delete(item)
+                                    }
                                 }
                             }
                         }
                     }
 
-                    Text("输出为 AMR-NB 12.2 kbps / 8 kHz / 单声道，保存在本应用的 Documents 目录，可在「文件」App 的「我的 iPhone → 语音转AMR」中查看和导出。")
+                    Text("当前输出：\(model.format.title)（\(model.format.detail)）。文件保存在本应用 Documents 目录，可在「文件」App 的「我的 iPhone → 语音转AMR」查看，列表行向左滑可重命名或删除。")
                         .font(.system(size: 12))
                         .foregroundStyle(Palette.tertiary)
                         .padding(.top, 2)
@@ -70,20 +74,31 @@ struct ContentView: View {
                     }
                 }
             }
-            .fileImporter(isPresented: $picking,
-                          allowedContentTypes: Self.allowedTypes,
-                          allowsMultipleSelection: true) { result in
-                switch result {
-                case .success(let urls):
+            .sheet(isPresented: $picking) {
+                DocumentPicker { urls in
+                    picking = false
                     model.convert(urls: urls)
-                case .failure(let error):
-                    model.errorText = error.localizedDescription
                 }
+                .ignoresSafeArea()
             }
             .confirmationDialog("删除全部输出文件？", isPresented: $confirmClear,
                                 titleVisibility: .visible) {
                 Button("全部删除", role: .destructive) { model.deleteAll() }
                 Button("取消", role: .cancel) { }
+            }
+            .alert("重命名", isPresented: Binding(
+                get: { renameItem != nil },
+                set: { if !$0 { renameItem = nil } }
+            )) {
+                TextField("文件名", text: $renameText)
+                Button("保存") {
+                    if let item = renameItem {
+                        model.rename(item, to: renameText)
+                    }
+                }
+                Button("取消", role: .cancel) { }
+            } message: {
+                Text("只修改文件名，扩展名保持不变")
             }
             .photosPicker(isPresented: $showingPhotos, selection: $videoItem, matching: .videos)
             .onChange(of: videoItem) { _, item in
@@ -114,7 +129,7 @@ struct ContentView: View {
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(Palette.secondary)
                     Spacer()
-                    Text(model.busy ? "转换中…" : "AMR-NB 12.2k")
+                    Text(model.busy ? "转换中…" : model.format.title)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(Palette.secondary)
                 }
@@ -164,13 +179,38 @@ struct ContentView: View {
                     Text("输出格式")
                         .font(.system(size: 14))
                         .foregroundStyle(Palette.secondary)
+
                     Spacer(minLength: 8)
-                    Text("AMR-NB 12.2 kbps")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(Palette.ink)
+
+                    Menu {
+                        ForEach(OutputFormat.allCases) { option in
+                            Button {
+                                model.format = option
+                            } label: {
+                                if model.format == option {
+                                    Label("\(option.title) · \(option.detail)", systemImage: "checkmark")
+                                } else {
+                                    Text("\(option.title) · \(option.detail)")
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 5) {
+                            Text(model.format.title)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(Palette.ink)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(Palette.tertiary)
+                        }
+                        .padding(.vertical, 6)
+                        .padding(.leading, 10)
+                        .contentShape(Rectangle())
+                    }
+                    .disabled(model.busy)
                 }
                 .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+                .padding(.vertical, 8)
             }
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         }
@@ -198,6 +238,74 @@ struct ContentView: View {
                     .tint(Palette.ink)
             }
         }
+    }
+}
+
+// MARK: - 左滑操作
+
+private struct SwipeActionRow<Content: View>: View {
+    let onRename: () -> Void
+    let onDelete: () -> Void
+    @ViewBuilder var content: Content
+
+    @State private var offset: CGFloat = 0
+    @State private var dragStart: CGFloat?
+
+    private let actionWidth: CGFloat = 152
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            HStack(spacing: 8) {
+                Button {
+                    close()
+                    onRename()
+                } label: {
+                    Text("重命名")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 72, height: 74)
+                        .background(Palette.warning, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    close()
+                    onDelete()
+                } label: {
+                    Text("删除")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 72, height: 74)
+                        .background(Palette.danger, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            }
+
+            content
+                .background(Palette.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .offset(x: offset)
+                .gesture(
+                    DragGesture(minimumDistance: 10)
+                        .onChanged { value in
+                            if dragStart == nil { dragStart = offset }
+                            offset = min(0, max(-actionWidth, (dragStart ?? 0) + value.translation.width))
+                        }
+                        .onEnded { value in
+                            let projected = (dragStart ?? 0) + value.predictedEndTranslation.width
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) {
+                                offset = projected < -actionWidth / 2 ? -actionWidth : 0
+                            }
+                            dragStart = nil
+                        }
+                )
+                .onTapGesture {
+                    if offset != 0 { close() }
+                }
+        }
+    }
+
+    private func close() {
+        withAnimation(.easeOut(duration: 0.16)) { offset = 0 }
     }
 }
 

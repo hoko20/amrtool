@@ -33,10 +33,13 @@ targets:
         SWIFT_OBJC_BRIDGING_HEADER: $(SRCROOT)/AMRConverter/AMRBridge.h
         HEADER_SEARCH_PATHS:
           - $(SRCROOT)/Vendor/include
+          - $(SRCROOT)/Vendor/include/silk
         LIBRARY_SEARCH_PATHS:
           - $(SRCROOT)/Vendor/lib
         OTHER_LDFLAGS:
           - "-lopencore-amrnb"
+          - "-lvo-amrwbenc"
+          - "-lSKP_SILK_SDK"
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGN_IDENTITY: ""
