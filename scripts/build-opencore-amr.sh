@@ -1,59 +1,67 @@
 #!/usr/bin/env bash
-# 交叉编译 opencore-amr 的 amrnb（含编码器）为 iOS device 静态库。
+# 用 opencore-amr 自带的 autotools 构建 iOS device 静态库（AMR-NB 编解码，C 模式）。
 # 产物：Vendor/lib/libopencore-amrnb.a、Vendor/include/interf_enc.h
+#
+# 注意：opencore-amr 0.1.6 的 amrnb/ 目录只有头文件和 wrapper.cpp，
+# 编码器实现位于 opencore/codecs_v2/audio/gsm_amr/ 下，必须走 configure + make。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENDOR="$ROOT/Vendor"
 WORK="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/opencore-amr-build"
+VERSION="0.1.6"
 MIN_IOS="${MIN_IOS:-26.0}"
 
 rm -rf "$WORK"
 mkdir -p "$WORK" "$VENDOR/lib" "$VENDOR/include"
 
-echo "== 获取 opencore-amr 源码 =="
-AMR_SRC=""
+SRC="$WORK/opencore-amr-$VERSION"
 
-# 1) SourceForge 官方发布包
-if curl -fsSL --retry 3 -o "$WORK/opencore-amr.tar.gz" \
-    "https://downloads.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.6.tar.gz"; then
-  tar xzf "$WORK/opencore-amr.tar.gz" -C "$WORK"
-  AMR_SRC="$(find "$WORK" -maxdepth 3 -type d -name amrnb | head -1)"
+echo "== 获取 opencore-amr $VERSION =="
+if curl -fsSL --retry 5 --retry-delay 3 \
+    -o "$WORK/src.tar.gz" \
+    "https://downloads.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-$VERSION.tar.gz"; then
+  tar xzf "$WORK/src.tar.gz" -C "$WORK"
+else
+  echo "SourceForge 下载失败，改用 GitHub 镜像"
+  git clone --depth 1 https://github.com/feuvan/opencore-amr-iOS "$WORK/mirror"
+  SRC="$(find "$WORK/mirror" -maxdepth 3 -type f -name configure -exec dirname {} \; | head -1)"
+  [ -n "$SRC" ] || SRC="$WORK/mirror"
 fi
 
-# 2) 回退：GitHub 上的 iOS 移植仓库（内含完整源码）
-if [ -z "$AMR_SRC" ]; then
-  echo "SourceForge 不可用，改用 GitHub 镜像"
-  git clone --depth 1 https://github.com/feuvan/opencore-amr-iOS "$WORK/feuvan"
-  AMR_SRC="$(find "$WORK/feuvan" -maxdepth 4 -type d -name amrnb | head -1)"
-fi
-
-if [ -z "$AMR_SRC" ] || [ ! -f "$AMR_SRC/interf_enc.c" ]; then
-  echo "找不到 amrnb 源码（需要 interf_enc.c）" >&2
+if [ ! -f "$SRC/configure" ]; then
+  echo "源码里没有 configure，目录结构："
+  ls -la "$SRC" || true
   exit 1
 fi
-echo "源码目录：$AMR_SRC"
+echo "源码目录：$SRC"
 
-echo "== 交叉编译 arm64 =="
+echo "== 配置交叉编译（arm64 / iOS $MIN_IOS）=="
 SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
-mkdir -p "$WORK/obj"
+CLANG="$(xcrun --sdk iphoneos -f clang)"
+CLANGXX="$(dirname "$CLANG")/clang++"
+ARCH_FLAGS="-arch arm64 -isysroot $SDK -miphoneos-version-min=$MIN_IOS"
 
-OBJS=()
-for source in "$AMR_SRC"/*.c; do
-  object="$WORK/obj/$(basename "${source%.c}").o"
-  xcrun --sdk iphoneos clang \
-    -arch arm64 \
-    -isysroot "$SDK" \
-    -miphoneos-version-min="$MIN_IOS" \
-    -O2 -fPIC -Wno-everything \
-    -I"$AMR_SRC" \
-    -c "$source" -o "$object"
-  OBJS+=("$object")
-done
+cd "$SRC"
+./configure \
+  --host=arm-apple-darwin \
+  --disable-shared \
+  --enable-static \
+  --enable-compile-c \
+  --disable-dependency-tracking \
+  CC="$CLANG" \
+  CXX="$CLANGXX" \
+  CFLAGS="$ARCH_FLAGS -O2 -fPIC" \
+  CXXFLAGS="$ARCH_FLAGS -O2 -fPIC" \
+  LDFLAGS="$ARCH_FLAGS"
 
-xcrun --sdk iphoneos ar -rcs "$VENDOR/lib/libopencore-amrnb.a" "${OBJS[@]}"
-cp "$AMR_SRC/interf_enc.h" "$VENDOR/include/"
+echo "== 编译 libopencore-amrnb =="
+make -j"$(sysctl -n hw.ncpu)" -C amrnb
 
-echo "== 产物 =="
+echo "== 安装到 Vendor =="
+cp amrnb/.libs/libopencore-amrnb.a "$VENDOR/lib/libopencore-amrnb.a"
+cp amrnb/interf_enc.h "$VENDOR/include/interf_enc.h"
+
 ls -lh "$VENDOR/lib/libopencore-amrnb.a"
 lipo -info "$VENDOR/lib/libopencore-amrnb.a"
+nm -gU "$VENDOR/lib/libopencore-amrnb.a" | grep -c "Encoder_Interface_Encode" || true
