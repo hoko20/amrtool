@@ -19,7 +19,17 @@ ARCH="arm64"
 
 SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
 CC="$(xcrun --sdk iphoneos -f clang)"
+CXX="$(xcrun --sdk iphoneos -f clang++)"
 COMMON_FLAGS="-target arm64-apple-ios$MIN_IOS -arch $ARCH -isysroot $SDK -miphoneos-version-min=$MIN_IOS -O2 -fPIC"
+
+check_ios_archive() {
+  local info
+  info="$(otool -l "$1" 2>/dev/null)"
+  if [[ -z "$info" ]] || ! grep -Eq "platform IOS|LC_VERSION_MIN_IPHONEOS" <<<"$info" || grep -q "platform MACOS" <<<"$info"; then
+    echo "错误：$1 不是纯 iOS 目标编译产物" >&2
+    exit 1
+  fi
+}
 
 mkdir -p "$VENDOR/lib" "$VENDOR/include/silk" "$WORK"
 
@@ -51,10 +61,13 @@ cd "$WORK/opencore-amr-0.1.6"
 ./configure --host=aarch64-apple-darwin \
             --disable-shared --enable-static \
             --prefix="$WORK/prefix-opencore" \
-            CC="$CC" CFLAGS="$COMMON_FLAGS" LDFLAGS="$COMMON_FLAGS"
+            CC="$CC" CFLAGS="$COMMON_FLAGS" \
+            CXX="$CXX" CXXFLAGS="$COMMON_FLAGS" \
+            LDFLAGS="$COMMON_FLAGS"
 make -j"$(sysctl -n hw.ncpu)"
 make install
 cp "$WORK/prefix-opencore/lib/libopencore-amrnb.a" "$VENDOR/lib/"
+check_ios_archive "$VENDOR/lib/libopencore-amrnb.a"
 NB_HEADER="$(find "$WORK/prefix-opencore" -name 'interf_enc.h' | head -1)"
 if [[ -z "$NB_HEADER" ]]; then
   echo "找不到 interf_enc.h" >&2
@@ -72,10 +85,13 @@ cd "$WORK/vo-amrwbenc-0.1.3"
 ./configure --host=aarch64-apple-darwin \
             --disable-shared --enable-static \
             --prefix="$WORK/prefix-amrwbenc" \
-            CC="$CC" CFLAGS="$COMMON_FLAGS" LDFLAGS="$COMMON_FLAGS"
+            CC="$CC" CFLAGS="$COMMON_FLAGS" \
+            CXX="$CXX" CXXFLAGS="$COMMON_FLAGS" \
+            LDFLAGS="$COMMON_FLAGS"
 make -j"$(sysctl -n hw.ncpu)"
 make install
 cp "$WORK/prefix-amrwbenc/lib/libvo-amrwbenc.a" "$VENDOR/lib/"
+check_ios_archive "$VENDOR/lib/libvo-amrwbenc.a"
 WB_HEADER="$(find "$WORK/prefix-amrwbenc" -name 'enc_if.h' | head -1)"
 if [[ -z "$WB_HEADER" ]]; then
   echo "找不到 enc_if.h" >&2
@@ -116,6 +132,7 @@ while IFS= read -r -d '' file; do
 done < <(find "$SILK_SRC" -name '*.c' -print0)
 
 libtool -static -o "$VENDOR/lib/libSKP_SILK_SDK.a" "$OBJ"/*.o
+check_ios_archive "$VENDOR/lib/libSKP_SILK_SDK.a"
 
 # 头文件全部拷贝，避免 SDK 内部 include 缺失
 cp "$SILK_INCLUDE"/*.h "$VENDOR/include/silk/"
