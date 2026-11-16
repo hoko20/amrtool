@@ -9,9 +9,9 @@ cd "$(dirname "$0")/.."
 ROOT="$PWD"
 DERIVED="$ROOT/build/derived"
 STAGE="$ROOT/build/stage"
-APPNAME="AMRConverter.app"
-BINARY="AMRConverter"
-IPA="$ROOT/build/AMRConverter-unsigned.ipa"
+APPNAME="AudioForge.app"
+BINARY="AudioForge"
+IPA="$ROOT/build/AudioForge-unsigned.ipa"
 
 if [ ! -f "$ROOT/Vendor/lib/libopencore-amrnb.a" ]; then
   echo "缺少 Vendor/lib/libopencore-amrnb.a，先执行 scripts/build-opencore-amr.sh" >&2
@@ -27,8 +27,8 @@ xcodegen generate --spec project.yml
 
 echo "== 编译 =="
 BUILD_ARGS=(
-  -project "$ROOT/AMRConverter.xcodeproj"
-  -scheme AMRConverter
+  -project "$ROOT/AudioForge.xcodeproj"
+  -scheme AudioForge
   -configuration Release
   -sdk iphoneos
   -destination 'generic/platform=iOS'

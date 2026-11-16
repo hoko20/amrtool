@@ -1,4 +1,4 @@
-name: Build AMR Converter IPA
+﻿name: Build AudioForge IPA
 
 on:
   push:
@@ -73,7 +73,7 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AMRConverter-IPA
+          name: AudioForge-IPA
           path: |
             build/*.ipa
             build/*.ipa.sha256

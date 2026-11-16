@@ -1,4 +1,4 @@
-name: AMRConverter
+name: AudioForge
 options:
   bundleIdPrefix: com.trae
   deploymentTarget:
@@ -8,8 +8,6 @@ options:
 
 settings:
   base:
-    SWIFT_VERSION: "5.0"
-    SWIFT_STRICT_CONCURRENCY: minimal
     CLANG_ENABLE_MODULES: YES
     IPHONEOS_DEPLOYMENT_TARGET: "26.0"
     TARGETED_DEVICE_FAMILY: "1"
@@ -17,20 +15,19 @@ settings:
     ENABLE_USER_SCRIPT_SANDBOXING: NO
 
 targets:
-  AMRConverter:
+  AudioForge:
     type: application
     platform: iOS
     sources:
-      - path: AMRConverter
+      - path: Sources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.trae.amrconverter
-        PRODUCT_NAME: AMRConverter
+        PRODUCT_NAME: AudioForge
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
         INFOPLIST_FILE: $(SRCROOT)/Support/Info.plist
         GENERATE_INFOPLIST_FILE: NO
-        SWIFT_OBJC_BRIDGING_HEADER: $(SRCROOT)/AMRConverter/AMRBridge.h
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         HEADER_SEARCH_PATHS:
@@ -49,13 +46,14 @@ targets:
       - sdk: AVFoundation.framework
       - sdk: CoreMedia.framework
       - sdk: PhotosUI.framework
+      - sdk: UniformTypeIdentifiers.framework
       - sdk: UIKit.framework
 
 schemes:
-  AMRConverter:
+  AudioForge:
     build:
       targets:
-        AMRConverter: all
+        AudioForge: all
     run:
       config: Debug
     archive:
