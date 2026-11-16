@@ -22,10 +22,11 @@ struct HomeView: View {
     @Bindable var model: ConversionModel
 
     @State private var picking = false
-    @State private var showingPhotos = false
     @State private var videoItem: PhotosPickerItem?
     @State private var renameItem: OutputFile?
     @State private var renameText = ""
+    @State private var shareItems: [Any] = []
+    @State private var sharing = false
 
     var body: some View {
         NavigationStack {
@@ -37,20 +38,16 @@ struct HomeView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("AudioForge")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    PhotosPicker(selection: $videoItem, matching: .videos) {
-                        Image(systemName: "photo.on.rectangle")
-                    }
-                    .accessibilityLabel("从相册选择视频")
-                }
-            }
             .sheet(isPresented: $picking) {
                 DocumentPicker { urls in
                     picking = false
                     model.convert(urls: urls)
                 }
                 .ignoresSafeArea()
+            }
+            .sheet(isPresented: $sharing) {
+                ShareSheet(items: shareItems)
+                    .ignoresSafeArea()
             }
             .onChange(of: videoItem) { _, item in
                 guard let item else { return }
@@ -92,13 +89,17 @@ struct HomeView: View {
                 guard !model.busy else { return }
                 picking = true
             } label: {
-                Label("从「文件」选择音频或视频", systemImage: "folder")
+                DetailRow(title: "从「文件」选择音频或视频",
+                          subtitle: "MP3 / MP4 / M4A / MOV / WAV")
             }
+            .buttonStyle(.plain)
             .disabled(model.busy)
 
             PhotosPicker(selection: $videoItem, matching: .videos) {
-                Label("从相册选择视频", systemImage: "photo.on.rectangle.angled")
+                DetailRow(title: "从相册选择视频",
+                          subtitle: "自动只取视频中的声音")
             }
+            .buttonStyle(.plain)
             .disabled(model.busy)
         } header: {
             Text("导入")
@@ -106,7 +107,7 @@ struct HomeView: View {
             if let error = model.errorText {
                 Text(error).foregroundStyle(.red)
             } else {
-                Text("支持 MP3、MP4、M4A、MOV、WAV 等带音轨的文件，视频会自动只取声音。当前状态：\(model.statusText)")
+                Text("当前状态：\(model.statusText)")
             }
         }
     }
@@ -142,7 +143,7 @@ struct HomeView: View {
     @ViewBuilder
     private var progressSection: some View {
         if model.busy {
-            Section("进度") {
+            Section {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(model.currentName.isEmpty ? "正在转换" : model.currentName)
@@ -156,6 +157,8 @@ struct HomeView: View {
                     ProgressView(value: model.progress)
                 }
                 .padding(.vertical, 2)
+            } header: {
+                Text("进度")
             }
         }
     }
@@ -169,7 +172,9 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(model.outputs) { item in
-                    OutputRow(item: item)
+                    DetailRow(title: item.name,
+                              subtitle: "\(item.sizeText) · \(item.dateText)",
+                              showsDisclosure: false)
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
                                 model.delete(item)
@@ -184,6 +189,13 @@ struct HomeView: View {
                                 Label("重命名", systemImage: "pencil")
                             }
                             .tint(.orange)
+
+                            Button {
+                                shareItems = [item.url]
+                                sharing = true
+                            } label: {
+                                Label("分享", systemImage: "square.and.arrow.up")
+                            }
                         }
                 }
             }
@@ -196,47 +208,35 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
         } footer: {
-            Text("左滑文件行可以重命名或删除。文件保存在「文件」App → 我的 iPhone → 语音转AMR。")
+            Text("左滑文件行可以分享、重命名或删除。文件保存在「文件」App → 我的 iPhone → AudioForge。")
         }
     }
 }
 
-// MARK: - 文件行
+// MARK: - 参考项目风格的行
 
-private struct OutputRow: View {
-    let item: OutputFile
+private struct DetailRow: View {
+    let title: String
+    let subtitle: String
+    var showsDisclosure = true
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: symbol)
-                .font(.system(size: 17))
-                .foregroundStyle(.tint)
-                .frame(width: 26)
-
+        HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 3) {
-                Text(item.name)
-                    .font(.body)
-                    .lineLimit(1)
-                Text("\(item.sizeText) · \(item.dateText)")
-                    .font(.caption)
+                Text(title)
+                    .foregroundStyle(.primary)
+                Text(subtitle)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
-
             Spacer(minLength: 8)
-
-            ShareLink(item: item.url) {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 16))
+            if showsDisclosure {
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-            .buttonStyle(.borderless)
         }
-    }
-
-    private var symbol: String {
-        switch item.url.pathExtension.lowercased() {
-        case "aud": return "waveform"
-        case "m4a": return "music.note"
-        default:    return "waveform.path"
-        }
+        .padding(.vertical, 2)
+        .contentShape(Rectangle())
     }
 }
