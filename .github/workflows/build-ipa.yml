@@ -1,0 +1,49 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master, audioforge ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Vendor static libraries
+        uses: actions/cache@v4
+        with:
+          path: Vendor
+          key: vendor-arm64-ios16-${{ hashFiles('Scripts/build-opencore-amr.sh') }}
+
+      - name: Build AMR / SILK static libraries
+        run: |
+          chmod +x Scripts/*.sh
+          Scripts/build-opencore-amr.sh
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build IPA
+        run: Scripts/build-ipa.sh
+
+      - name: Upload IPA and reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: AudioForge-IPA
+          if-no-files-found: error
+          path: |
+            build/*.ipa
+            build/sha256.txt
+            build/build-report.txt
+            build/xcodebuild.log

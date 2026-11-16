@@ -1,0 +1,16 @@
+# macOS / Xcode
+.DS_Store
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# XcodeGen 生成物
+*.xcodeproj/
+*.xcworkspace/
+
+# 构建产物与第三方源码
+build/
+Vendor/
+
+# 本地归档
+Reference/
