@@ -1,5 +1,5 @@
-//
-//  WQConvertViewController.m
+﻿//
+//  AFConvertViewController.m
 //  AudioForge
 //
 //  首页：导入音频/视频、选择输出格式、转换并进入输出文件列表。
@@ -9,11 +9,11 @@
 #import <PhotosUI/PhotosUI.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#import "WQUI.h"
+#import "AFUI.h"
 #import "AMREncoder.h"
 
-@interface WQConvertViewController () <UIDocumentPickerDelegate, PHPickerViewControllerDelegate>
-@property (nonatomic) WQOutputFormat format;
+@interface AFConvertViewController () <UIDocumentPickerDelegate, PHPickerViewControllerDelegate>
+@property (nonatomic) AFOutputFormat format;
 @property (nonatomic, getter=isBusy) BOOL busy;
 @property (nonatomic) double progress;
 @property (nonatomic, copy) NSString *currentName;
@@ -21,14 +21,14 @@
 @property (nonatomic, copy) NSString *errorText;
 @end
 
-@implementation WQConvertViewController
+@implementation AFConvertViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
     if (self) {
         self.title = @"转换";
-        _format = WQCurrentFormat();
+        _format = AFCurrentFormat();
         _statusText = @"等待选择文件";
     }
     return self;
@@ -97,7 +97,7 @@
         return self.errorText ?: [NSString stringWithFormat:@"支持 MP3、MP4、M4A、MOV、WAV。当前状态：%@", self.statusText];
     }
     if (section == 1) {
-        return WQFormatSummary(self.format);
+        return AFFormatSummary(self.format);
     }
     if (section == self.outputSection) {
         return @"转换结果保存在本应用的 Documents 目录，可在「文件」App 中查看和导出。";
@@ -147,7 +147,7 @@
         if (indexPath.row == 0) {
             cell.textLabel.text = @"输出格式";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ · %@",
-                                         WQFormatTitle(self.format), WQFormatSubtitle(self.format)];
+                                         AFFormatTitle(self.format), AFFormatSubtitle(self.format)];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         } else if (indexPath.row == 1) {
             cell.textLabel.text = @"采样率";
@@ -170,20 +170,20 @@
 - (NSString *)sampleRateText
 {
     switch (self.format) {
-        case WQOutputFormatSilk: return @"24 kHz";
-        case WQOutputFormatNB:   return @"8 kHz";
-        case WQOutputFormatWB:   return @"16 kHz";
-        case WQOutputFormatM4A:  return @"跟随源文件";
+        case AFOutputFormatSilk: return @"24 kHz";
+        case AFOutputFormatNB:   return @"8 kHz";
+        case AFOutputFormatWB:   return @"16 kHz";
+        case AFOutputFormatM4A:  return @"跟随源文件";
     }
 }
 
 - (NSString *)bitrateText
 {
     switch (self.format) {
-        case WQOutputFormatSilk: return @"25 kbps 单声道";
-        case WQOutputFormatNB:   return @"12.2 kbps 单声道";
-        case WQOutputFormatWB:   return @"23.85 kbps 单声道";
-        case WQOutputFormatM4A:  return @"AAC 96 kbps";
+        case AFOutputFormatSilk: return @"25 kbps 单声道";
+        case AFOutputFormatNB:   return @"12.2 kbps 单声道";
+        case AFOutputFormatWB:   return @"23.85 kbps 单声道";
+        case AFOutputFormatM4A:  return @"AAC 96 kbps";
     }
 }
 
@@ -210,7 +210,7 @@
 
         UIProgressView *bar = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         bar.tag = 101;
-        bar.progressTintColor = WQAccentColor();
+        bar.progressTintColor = AFAccentColor();
         bar.translatesAutoresizingMaskIntoConstraints = NO;
 
         [cell.contentView addSubview:name];
@@ -271,7 +271,7 @@
     }
 
     if (indexPath.section == self.outputSection) {
-        WQFilesViewController *files = [[WQFilesViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
+        AFFilesViewController *files = [[AFFilesViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
         [self.navigationController pushViewController:files animated:YES];
     }
 }
@@ -281,20 +281,20 @@
     UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"输出格式"
                                                                   message:nil
                                                            preferredStyle:UIAlertControllerStyleActionSheet];
-    WQOutputFormat options[] = {WQOutputFormatSilk, WQOutputFormatNB, WQOutputFormatWB, WQOutputFormatM4A};
+    AFOutputFormat options[] = {AFOutputFormatSilk, AFOutputFormatNB, AFOutputFormatWB, AFOutputFormatM4A};
     for (NSInteger index = 0; index < 4; index++) {
-        WQOutputFormat format = options[index];
-        NSString *title = [NSString stringWithFormat:@"%@ · %@", WQFormatTitle(format), WQFormatSubtitle(format)];
+        AFOutputFormat format = options[index];
+        NSString *title = [NSString stringWithFormat:@"%@ · %@", AFFormatTitle(format), AFFormatSubtitle(format)];
         UIAlertAction *action = [UIAlertAction actionWithTitle:title
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *item) {
             self.format = format;
-            WQSetCurrentFormat(format);
+            AFSetCurrentFormat(format);
             [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1]
                           withRowAnimation:UITableViewRowAnimationAutomatic];
         }];
         if (format == self.format) {
-            [action setValue:WQAccentColor() forKey:@"titleTextColor"];
+            [action setValue:AFAccentColor() forKey:@"titleTextColor"];
         }
         [sheet addAction:action];
     }
@@ -339,7 +339,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 
     NSItemProvider *provider = results.firstObject.itemProvider;
     if (![provider hasItemConformingToTypeIdentifier:UTTypeMovie.identifier]) {
-        WQPresentAlert(self, @"无法读取", @"相册返回的条目不是视频");
+        AFPresentAlert(self, @"无法读取", @"相册返回的条目不是视频");
         return;
     }
 
@@ -347,14 +347,14 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
                                    completionHandler:^(NSURL *url, NSError *error) {
         if (!url) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                WQPresentAlert(self, @"读取失败", error.localizedDescription ?: @"无法获取视频文件");
+                AFPresentAlert(self, @"读取失败", error.localizedDescription ?: @"无法获取视频文件");
             });
             return;
         }
         NSURL *copy = [self temporaryCopyOfURL:url error:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (copy) [self startConversionWithURL:copy];
-            else WQPresentAlert(self, @"读取失败", @"复制视频到临时目录失败");
+            else AFPresentAlert(self, @"读取失败", @"复制视频到临时目录失败");
         });
     }];
 }
@@ -372,7 +372,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     self.statusText = [NSString stringWithFormat:@"正在转换 %@", self.currentName];
     [self.tableView reloadData];
 
-    WQOutputFormat format = self.format;
+    AFOutputFormat format = self.format;
     NSURL *input = [self temporaryCopyOfURL:sourceURL error:nil];
     if (!input) {
         self.busy = NO;
@@ -387,7 +387,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
         NSError *error = nil;
         BOOL ok = NO;
 
-        if (format == WQOutputFormatM4A) {
+        if (format == AFOutputFormatM4A) {
             ok = [self exportM4AFromURL:input toURL:output error:&error];
         } else {
             ok = [AMREncoder convertMediaAtURL:input
@@ -421,11 +421,11 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     });
 }
 
-- (AMROutputFormat)amrFormatFor:(WQOutputFormat)format
+- (AMROutputFormat)amrFormatFor:(AFOutputFormat)format
 {
     switch (format) {
-        case WQOutputFormatNB: return AMROutputFormatNB;
-        case WQOutputFormatWB: return AMROutputFormatWB;
+        case AFOutputFormatNB: return AMROutputFormatNB;
+        case AFOutputFormatWB: return AMROutputFormatWB;
         default:               return AMROutputFormatSilk;
     }
 }
@@ -486,11 +486,11 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
     return ok ? target : nil;
 }
 
-- (NSURL *)outputURLForInput:(NSURL *)input format:(WQOutputFormat)format
+- (NSURL *)outputURLForInput:(NSURL *)input format:(AFOutputFormat)format
 {
-    NSString *directory = WQDocumentsPath();
+    NSString *directory = AFDocumentsPath();
     NSString *base = input.lastPathComponent.stringByDeletingPathExtension;
-    NSString *extension = WQFormatExtension(format);
+    NSString *extension = AFFormatExtension(format);
 
     NSURL *url = [NSURL fileURLWithPath:[[directory stringByAppendingPathComponent:base]
                                          stringByAppendingPathExtension:extension]];
@@ -507,7 +507,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 - (NSInteger)outputFileCount
 {
     NSArray<NSString *> *contents = [[NSFileManager defaultManager]
-                                     contentsOfDirectoryAtPath:WQDocumentsPath() error:nil];
+                                     contentsOfDirectoryAtPath:AFDocumentsPath() error:nil];
     NSArray<NSString *> *suffixes = @[@"amr", @"aud", @"m4a"];
     NSInteger count = 0;
     for (NSString *name in contents) {

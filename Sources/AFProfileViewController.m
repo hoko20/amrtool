@@ -1,11 +1,11 @@
-//
-//  WQProfileViewController.m
+﻿//
+//  AFProfileViewController.m
 //  AudioForge
 //
 
-#import "WQUI.h"
+#import "AFUI.h"
 
-@implementation WQProfileViewController
+@implementation AFProfileViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style
 {

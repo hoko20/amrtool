@@ -1,5 +1,5 @@
-//
-//  WQFilesViewController.m
+﻿//
+//  AFFilesViewController.m
 //  AudioForge
 //
 //  输出文件列表：系统表格 + 原生左滑（分享 / 重命名 / 删除）。
@@ -7,13 +7,13 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "WQUI.h"
+#import "AFUI.h"
 
-@interface WQFilesViewController ()
+@interface AFFilesViewController ()
 @property (nonatomic, copy) NSArray<NSString *> *files;
 @end
 
-@implementation WQFilesViewController
+@implementation AFFilesViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style
 {
@@ -41,7 +41,7 @@
 - (void)reloadFiles
 {
     NSArray<NSString *> *contents = [[NSFileManager defaultManager]
-                                     contentsOfDirectoryAtPath:WQDocumentsPath() error:nil];
+                                     contentsOfDirectoryAtPath:AFDocumentsPath() error:nil];
     NSSet<NSString *> *suffixes = [NSSet setWithObjects:@"amr", @"aud", @"m4a", nil];
     NSMutableArray<NSString *> *matched = [NSMutableArray array];
     for (NSString *name in contents) {
@@ -86,7 +86,7 @@
     }
 
     NSString *name = self.files[indexPath.row];
-    NSString *path = [WQDocumentsPath() stringByAppendingPathComponent:name];
+    NSString *path = [AFDocumentsPath() stringByAppendingPathComponent:name];
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
     NSNumber *size = attributes[NSFileSize];
     NSDate *date = attributes[NSFileCreationDate] ?: [NSDate date];
@@ -142,7 +142,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
         [weakSelf shareFileAtIndex:indexPath.row fromCell:(UITableViewCell *)sourceView];
         completionHandler(YES);
     }];
-    share.backgroundColor = WQAccentColor();
+    share.backgroundColor = AFAccentColor();
 
     UISwipeActionsConfiguration *configuration =
         [UISwipeActionsConfiguration configurationWithActions:@[delete, rename, share]];
@@ -155,7 +155,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)shareFileAtIndex:(NSInteger)index fromCell:(UIView *)cell
 {
     if (index < 0 || index >= (NSInteger)self.files.count) return;
-    NSURL *url = [NSURL fileURLWithPath:[WQDocumentsPath() stringByAppendingPathComponent:self.files[index]]];
+    NSURL *url = [NSURL fileURLWithPath:[AFDocumentsPath() stringByAppendingPathComponent:self.files[index]]];
 
     UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:@[url]
                                                                              applicationActivities:nil];
@@ -167,7 +167,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)deleteFileAtIndex:(NSInteger)index
 {
     if (index < 0 || index >= (NSInteger)self.files.count) return;
-    NSString *path = [WQDocumentsPath() stringByAppendingPathComponent:self.files[index]];
+    NSString *path = [AFDocumentsPath() stringByAppendingPathComponent:self.files[index]];
     [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     [self reloadFiles];
 }
@@ -195,11 +195,11 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
         NSString *trimmed = [input stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
         if (trimmed.length == 0 || [trimmed isEqualToString:base]) return;
 
-        NSString *directory = WQDocumentsPath();
+        NSString *directory = AFDocumentsPath();
         NSString *target = [[directory stringByAppendingPathComponent:trimmed.stringByDeletingPathExtension]
                             stringByAppendingPathExtension:extension];
         if ([[NSFileManager defaultManager] fileExistsAtPath:target]) {
-            WQPresentAlert(weakSelf, @"重命名失败", @"同名文件已存在");
+            AFPresentAlert(weakSelf, @"重命名失败", @"同名文件已存在");
             return;
         }
         NSError *error = nil;
@@ -207,7 +207,7 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
                                                 toPath:target
                                                  error:&error];
         if (error) {
-            WQPresentAlert(weakSelf, @"重命名失败", error.localizedDescription);
+            AFPresentAlert(weakSelf, @"重命名失败", error.localizedDescription);
         }
         [weakSelf reloadFiles];
     }]];

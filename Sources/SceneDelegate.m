@@ -1,11 +1,11 @@
-//
+﻿//
 //  SceneDelegate.m
 //  AudioForge
 //
 
-#import "WQUI.h"
+#import "AFUI.h"
 
-@implementation WQSceneDelegate
+@implementation AFSceneDelegate
 
 - (void)scene:(UIScene *)scene
 willConnectToSession:(UISceneSession *)session
@@ -14,16 +14,16 @@ willConnectToSession:(UISceneSession *)session
     if (![scene isKindOfClass:UIWindowScene.class]) return;
     UIWindowScene *windowScene = (UIWindowScene *)scene;
     self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
-    self.window.tintColor = WQAccentColor();
+    self.window.tintColor = AFAccentColor();
 
-    WQConvertViewController *convert =
-        [[WQConvertViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
-    WQFilesViewController *files =
-        [[WQFilesViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
-    WQToolsViewController *tools =
-        [[WQToolsViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
-    WQProfileViewController *profile =
-        [[WQProfileViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
+    AFConvertViewController *convert =
+        [[AFConvertViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
+    AFFilesViewController *files =
+        [[AFFilesViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
+    AFToolsViewController *tools =
+        [[AFToolsViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
+    AFProfileViewController *profile =
+        [[AFProfileViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
 
     NSArray<UIViewController *> *roots = @[convert, files, tools, profile];
     NSArray<NSString *> *titles = @[@"转换", @"文件", @"工具", @"我的"];
@@ -44,7 +44,7 @@ willConnectToSession:(UISceneSession *)session
 
     UITabBarController *tabBar = [UITabBarController new];
     tabBar.viewControllers = tabs.copy;
-    tabBar.tabBar.tintColor = WQAccentColor();
+    tabBar.tabBar.tintColor = AFAccentColor();
     tabBar.tabBar.unselectedItemTintColor = UIColor.secondaryLabelColor;
 
     UITabBarAppearance *appearance = [UITabBarAppearance new];

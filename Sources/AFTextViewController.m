@@ -1,15 +1,15 @@
-//
-//  WQTextViewController.m
+﻿//
+//  AFTextViewController.m
 //  AudioForge
 //
 
-#import "WQUI.h"
+#import "AFUI.h"
 
-@interface WQTextViewController ()
+@interface AFTextViewController ()
 @property (nonatomic, copy) NSString *text;
 @end
 
-@implementation WQTextViewController
+@implementation AFTextViewController
 
 - (instancetype)initWithTitle:(NSString *)title text:(NSString *)text
 {

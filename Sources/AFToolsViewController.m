@@ -1,11 +1,11 @@
-//
-//  WQToolsViewController.m
+﻿//
+//  AFToolsViewController.m
 //  AudioForge
 //
 
-#import "WQUI.h"
+#import "AFUI.h"
 
-@implementation WQToolsViewController
+@implementation AFToolsViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style
 {
@@ -68,7 +68,7 @@
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
             cell.textLabel.text = @"复制 Documents 路径";
-            cell.detailTextLabel.text = WQDocumentsPath();
+            cell.detailTextLabel.text = AFDocumentsPath();
             cell.accessoryType = UITableViewCellAccessoryNone;
         } else {
             cell.textLabel.text = @"清空全部输出文件";
@@ -88,8 +88,8 @@
 
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            [UIPasteboard generalPasteboard].string = WQDocumentsPath();
-            WQPresentAlert(self, @"已复制", WQDocumentsPath());
+            [UIPasteboard generalPasteboard].string = AFDocumentsPath();
+            AFPresentAlert(self, @"已复制", AFDocumentsPath());
         } else {
             [self confirmClear];
         }
@@ -107,7 +107,7 @@
         @"接近原始音质，适合通用播放、分享与存档，但不是 AMR 格式。\n\n"
         @"体积参考：10 分钟音频，AMR-NB 约 0.9 MB，SILK 约 1.8 MB，M4A 约 7 MB。";
 
-    WQTextViewController *controller = [[WQTextViewController alloc] initWithTitle:@"编码说明" text:text];
+    AFTextViewController *controller = [[AFTextViewController alloc] initWithTitle:@"编码说明" text:text];
     [self.navigationController pushViewController:controller animated:YES];
 }
 
@@ -120,16 +120,16 @@
     __weak typeof(self) weakSelf = self;
     [alert addAction:[UIAlertAction actionWithTitle:@"清空" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         NSArray<NSString *> *contents = [[NSFileManager defaultManager]
-                                         contentsOfDirectoryAtPath:WQDocumentsPath() error:nil];
+                                         contentsOfDirectoryAtPath:AFDocumentsPath() error:nil];
         NSSet<NSString *> *suffixes = [NSSet setWithObjects:@"amr", @"aud", @"m4a", nil];
         for (NSString *name in contents) {
             if ([suffixes containsObject:name.pathExtension.lowercaseString]) {
-                NSString *path = [WQDocumentsPath() stringByAppendingPathComponent:name];
+                NSString *path = [AFDocumentsPath() stringByAppendingPathComponent:name];
                 [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
             }
         }
         [weakSelf.tableView reloadData];
-        WQPresentAlert(weakSelf, @"已清空", @"所有输出文件已删除");
+        AFPresentAlert(weakSelf, @"已清空", @"所有输出文件已删除");
     }]];
     [self presentViewController:alert animated:YES completion:nil];
 }
