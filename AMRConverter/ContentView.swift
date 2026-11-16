@@ -171,33 +171,20 @@ struct HomeView: View {
                 Text("还没有输出文件")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(model.outputs) { item in
-                    DetailRow(title: item.name,
-                              subtitle: "\(item.sizeText) · \(item.dateText)",
-                              showsDisclosure: false)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                model.delete(item)
-                            } label: {
-                                Label("删除", systemImage: "trash")
-                            }
-
-                            Button {
-                                renameText = item.url.deletingPathExtension().lastPathComponent
-                                renameItem = item
-                            } label: {
-                                Label("重命名", systemImage: "pencil")
-                            }
-                            .tint(.orange)
-
-                            Button {
-                                shareItems = [item.url]
-                                sharing = true
-                            } label: {
-                                Label("分享", systemImage: "square.and.arrow.up")
-                            }
-                        }
-                }
+                OutputListView(outputs: model.outputs,
+                               onShare: { item in
+                                   shareItems = [item.url]
+                                   sharing = true
+                               },
+                               onRename: { item in
+                                   renameText = item.url.deletingPathExtension().lastPathComponent
+                                   renameItem = item
+                               },
+                               onDelete: { item in
+                                   model.delete(item)
+                               })
+                    .frame(height: OutputListView.height(for: model.outputs.count))
+                    .listRowInsets(EdgeInsets())
             }
         } header: {
             HStack {
@@ -208,7 +195,7 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
         } footer: {
-            Text("左滑文件行可以分享、重命名或删除。文件保存在「文件」App → 我的 iPhone → AudioForge。")
+            Text("输出区高度固定，文件多时在区域内滚动；左滑可分享、重命名或删除，点击行直接分享。文件保存在「文件」App → 我的 iPhone → AudioForge。")
         }
     }
 }
