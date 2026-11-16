@@ -1,0 +1,325 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		200100000000000000000001 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000001 /* main.m */; };
+		200100000000000000000002 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000002 /* AppDelegate.m */; };
+		200100000000000000000003 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000003 /* SceneDelegate.m */; };
+		200100000000000000000004 /* WQLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000004 /* WQLog.m */; };
+		200100000000000000000005 /* WQBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000005 /* WQBridge.m */; };
+		200100000000000000000006 /* WQPathLeak.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000006 /* WQPathLeak.m */; };
+		200100000000000000000007 /* WQFileOps.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000007 /* WQFileOps.m */; };
+		200100000000000000000008 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000008 /* HomeViewController.m */; };
+		200100000000000000000009 /* ContainersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000009 /* ContainersViewController.m */; };
+		20010000000000000000000A /* BrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 10010000000000000000000A /* BrowserViewController.m */; };
+		20010000000000000000000B /* EditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 10010000000000000000000B /* EditorViewController.m */; };
+		20010000000000000000000C /* ToolsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 10010000000000000000000C /* ToolsViewController.m */; };
+		20010000000000000000000D /* WQAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000014 /* WQAudio.m */; };
+		20010000000000000000000E /* WQAudioEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000016 /* WQAudioEncoder.m */; };
+		20010000000000000000000F /* WQAudioConvertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000017 /* WQAudioConvertViewController.m */; };
+		200100000000000000000010 /* WQAudioFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000018 /* WQAudioFilesViewController.m */; };
+		200100000000000000000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100100000000000000000019 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		100100000000000000000001 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		100100000000000000000002 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		100100000000000000000003 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		100100000000000000000004 /* WQLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQLog.m; sourceTree = "<group>"; };
+		100100000000000000000005 /* WQBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQBridge.m; sourceTree = "<group>"; };
+		100100000000000000000006 /* WQPathLeak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQPathLeak.m; sourceTree = "<group>"; };
+		100100000000000000000007 /* WQFileOps.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQFileOps.m; sourceTree = "<group>"; };
+		100100000000000000000008 /* HomeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		100100000000000000000009 /* ContainersViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContainersViewController.m; sourceTree = "<group>"; };
+		10010000000000000000000A /* BrowserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BrowserViewController.m; sourceTree = "<group>"; };
+		10010000000000000000000B /* EditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorViewController.m; sourceTree = "<group>"; };
+		10010000000000000000000C /* ToolsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToolsViewController.m; sourceTree = "<group>"; };
+		10010000000000000000000D /* WQKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WQKit.h; sourceTree = "<group>"; };
+		10010000000000000000000E /* WQUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WQUI.h; sourceTree = "<group>"; };
+		10010000000000000000000F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		100100000000000000000010 /* SandboxExplorer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SandboxExplorer.entitlements; sourceTree = "<group>"; };
+		100100000000000000000011 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		100100000000000000000012 /* SandboxExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SandboxExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		100100000000000000000013 /* WQAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WQAudio.h; sourceTree = "<group>"; };
+		100100000000000000000014 /* WQAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQAudio.m; sourceTree = "<group>"; };
+		100100000000000000000015 /* WQAudioEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WQAudioEncoder.h; sourceTree = "<group>"; };
+		100100000000000000000016 /* WQAudioEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQAudioEncoder.m; sourceTree = "<group>"; };
+		100100000000000000000017 /* WQAudioConvertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQAudioConvertViewController.m; sourceTree = "<group>"; };
+		100100000000000000000018 /* WQAudioFilesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WQAudioFilesViewController.m; sourceTree = "<group>"; };
+		100100000000000000000019 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		400100000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		300100000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				300100000000000000000002 /* Sources */,
+				300100000000000000000003 /* Config */,
+				300100000000000000000004 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		300100000000000000000002 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				10010000000000000000000D /* WQKit.h */,
+				10010000000000000000000E /* WQUI.h */,
+				100100000000000000000001 /* main.m */,
+				100100000000000000000002 /* AppDelegate.m */,
+				100100000000000000000003 /* SceneDelegate.m */,
+				100100000000000000000004 /* WQLog.m */,
+				100100000000000000000005 /* WQBridge.m */,
+				100100000000000000000006 /* WQPathLeak.m */,
+				100100000000000000000007 /* WQFileOps.m */,
+				100100000000000000000008 /* HomeViewController.m */,
+				100100000000000000000009 /* ContainersViewController.m */,
+				10010000000000000000000A /* BrowserViewController.m */,
+				10010000000000000000000B /* EditorViewController.m */,
+				10010000000000000000000C /* ToolsViewController.m */,
+				100100000000000000000013 /* WQAudio.h */,
+				100100000000000000000014 /* WQAudio.m */,
+				100100000000000000000015 /* WQAudioEncoder.h */,
+				100100000000000000000016 /* WQAudioEncoder.m */,
+				100100000000000000000017 /* WQAudioConvertViewController.m */,
+				100100000000000000000018 /* WQAudioFilesViewController.m */,
+				100100000000000000000019 /* Assets.xcassets */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		300100000000000000000003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				100100000000000000000011 /* Project.xcconfig */,
+				10010000000000000000000F /* Info.plist */,
+				100100000000000000000010 /* SandboxExplorer.entitlements */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		300100000000000000000004 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				100100000000000000000012 /* SandboxExplorer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		700100000000000000000001 /* SandboxExplorer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 600100000000000000000002 /* Build configuration list for PBXNativeTarget "SandboxExplorer" */;
+			buildPhases = (
+				400100000000000000000001 /* Sources */,
+				400100000000000000000002 /* Frameworks */,
+				400100000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SandboxExplorer;
+			productName = SandboxExplorer;
+			productReference = 100100000000000000000012 /* SandboxExplorer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		700100000000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					700100000000000000000001 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = 600100000000000000000001 /* Build configuration list for PBXProject "SandboxExplorer" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 300100000000000000000001;
+			productRefGroup = 300100000000000000000004 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				700100000000000000000001 /* SandboxExplorer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		400100000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200100000000000000000011 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		400100000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200100000000000000000001 /* main.m in Sources */,
+				200100000000000000000002 /* AppDelegate.m in Sources */,
+				200100000000000000000003 /* SceneDelegate.m in Sources */,
+				200100000000000000000004 /* WQLog.m in Sources */,
+				200100000000000000000005 /* WQBridge.m in Sources */,
+				200100000000000000000006 /* WQPathLeak.m in Sources */,
+				200100000000000000000007 /* WQFileOps.m in Sources */,
+				200100000000000000000008 /* HomeViewController.m in Sources */,
+				200100000000000000000009 /* ContainersViewController.m in Sources */,
+				20010000000000000000000A /* BrowserViewController.m in Sources */,
+				20010000000000000000000B /* EditorViewController.m in Sources */,
+				20010000000000000000000C /* ToolsViewController.m in Sources */,
+				20010000000000000000000D /* WQAudio.m in Sources */,
+				20010000000000000000000E /* WQAudioEncoder.m in Sources */,
+				20010000000000000000000F /* WQAudioConvertViewController.m in Sources */,
+				200100000000000000000010 /* WQAudioFilesViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		500100000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		500100000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		500100000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 100100000000000000000011 /* Project.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/SandboxExplorer.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_ID)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		500100000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 100100000000000000000011 /* Project.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/SandboxExplorer.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_ID)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		600100000000000000000001 /* Build configuration list for PBXProject "SandboxExplorer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				500100000000000000000001 /* Debug */,
+				500100000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		600100000000000000000002 /* Build configuration list for PBXNativeTarget "SandboxExplorer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				500100000000000000000003 /* Debug */,
+				500100000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 700100000000000000000002 /* Project object */;
+}

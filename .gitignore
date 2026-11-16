@@ -1,0 +1,31 @@
+# Build products
+build/
+dist/
+DerivedData/
+Vendor/
+*.ipa
+*.app/
+*.dSYM/
+*.dSYM.zip
+
+# Signing material - never commit
+*.p12
+*.cer
+*.mobileprovision
+*.keychain-db
+Config/SandboxExplorer.entitlements.generated
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+.DS_Store
+
+# Local tooling
+.venv/
+__pycache__/
+*.pyc
+
+# Locally generated GitHub secret payloads (certificates, passwords)
+Scripts/.secrets/
