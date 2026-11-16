@@ -34,6 +34,8 @@
 	<string>选择相册中的视频，转换为 AMR、SILK 或 M4A 语音文件</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

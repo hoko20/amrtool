@@ -5,14 +5,7 @@ struct ContentView: View {
     @State private var model = ConversionModel()
 
     var body: some View {
-        TabView {
-            HomeView(model: model)
-                .tabItem { Label("首页", systemImage: "arrow.triangle.2.circlepath") }
-
-            ProfileView(model: model)
-                .tabItem { Label("我的", systemImage: "person.crop.circle") }
-        }
-        .tint(.accentColor)
+        TabBarView(model: model)
     }
 }
 
