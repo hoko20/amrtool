@@ -19,7 +19,6 @@ ARCH="arm64"
 
 SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
 CC="$(xcrun --sdk iphoneos -f clang)"
-CXX="$(xcrun --sdk iphoneos -f clang++)"
 COMMON_FLAGS="-target arm64-apple-ios$MIN_IOS -arch $ARCH -isysroot $SDK -miphoneos-version-min=$MIN_IOS -O2 -fPIC"
 
 check_ios_archive() {
@@ -27,11 +26,22 @@ check_ios_archive() {
   info="$(otool -l "$1" 2>/dev/null)"
   if [[ -z "$info" ]] || ! grep -Eq "platform IOS|LC_VERSION_MIN_IPHONEOS" <<<"$info" || grep -q "platform MACOS" <<<"$info"; then
     echo "错误：$1 不是纯 iOS 目标编译产物" >&2
+    grep -E "platform |LC_VERSION_MIN" <<<"$info" | sort -u | head -5 >&2
     exit 1
   fi
 }
 
 mkdir -p "$VENDOR/lib" "$VENDOR/include/silk" "$WORK"
+
+# 编译器包装：无论 Makefile 如何组合变量，都强制注入 iOS 目标
+TOOLCHAIN="$WORK/toolchain"
+mkdir -p "$TOOLCHAIN"
+cat > "$TOOLCHAIN/clang-ios" <<EOF
+#!/bin/bash
+exec "$CC" -target arm64-apple-ios$MIN_IOS -isysroot "$SDK" -miphoneos-version-min=$MIN_IOS "\$@"
+EOF
+chmod +x "$TOOLCHAIN/clang-ios"
+IOS_CC="$TOOLCHAIN/clang-ios"
 
 if [[ -f "$VENDOR/lib/libopencore-amrnb.a" && \
       -f "$VENDOR/lib/libvo-amrwbenc.a" && \
@@ -61,10 +71,10 @@ cd "$WORK/opencore-amr-0.1.6"
 ./configure --host=aarch64-apple-darwin \
             --disable-shared --enable-static \
             --prefix="$WORK/prefix-opencore" \
-            CC="$CC" CFLAGS="$COMMON_FLAGS" \
-            CXX="$CXX" CXXFLAGS="$COMMON_FLAGS" \
-            LDFLAGS="$COMMON_FLAGS"
-make -j"$(sysctl -n hw.ncpu)"
+            CC="$IOS_CC" CXX="$IOS_CC"
+make -j"$(sysctl -n hw.ncpu)" \
+     CC="$IOS_CC" CXX="$IOS_CC" \
+     CFLAGS="$COMMON_FLAGS" CXXFLAGS="$COMMON_FLAGS" LDFLAGS="$COMMON_FLAGS"
 make install
 cp "$WORK/prefix-opencore/lib/libopencore-amrnb.a" "$VENDOR/lib/"
 check_ios_archive "$VENDOR/lib/libopencore-amrnb.a"
@@ -85,10 +95,10 @@ cd "$WORK/vo-amrwbenc-0.1.3"
 ./configure --host=aarch64-apple-darwin \
             --disable-shared --enable-static \
             --prefix="$WORK/prefix-amrwbenc" \
-            CC="$CC" CFLAGS="$COMMON_FLAGS" \
-            CXX="$CXX" CXXFLAGS="$COMMON_FLAGS" \
-            LDFLAGS="$COMMON_FLAGS"
-make -j"$(sysctl -n hw.ncpu)"
+            CC="$IOS_CC" CXX="$IOS_CC"
+make -j"$(sysctl -n hw.ncpu)" \
+     CC="$IOS_CC" CXX="$IOS_CC" \
+     CFLAGS="$COMMON_FLAGS" CXXFLAGS="$COMMON_FLAGS" LDFLAGS="$COMMON_FLAGS"
 make install
 cp "$WORK/prefix-amrwbenc/lib/libvo-amrwbenc.a" "$VENDOR/lib/"
 check_ios_archive "$VENDOR/lib/libvo-amrwbenc.a"
