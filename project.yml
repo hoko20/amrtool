@@ -31,6 +31,7 @@ targets:
         INFOPLIST_FILE: $(SRCROOT)/Support/Info.plist
         GENERATE_INFOPLIST_FILE: NO
         SWIFT_OBJC_BRIDGING_HEADER: $(SRCROOT)/AMRConverter/AMRBridge.h
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         HEADER_SEARCH_PATHS:
           - $(SRCROOT)/Vendor/include
           - $(SRCROOT)/Vendor/include/silk

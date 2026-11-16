@@ -12,6 +12,7 @@ struct ContentView: View {
             ProfileView(model: model)
                 .tabItem { Label("我的", systemImage: "person.crop.circle") }
         }
+        .tint(.accentColor)
     }
 }
 
