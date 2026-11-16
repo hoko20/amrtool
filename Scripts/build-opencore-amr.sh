@@ -19,7 +19,7 @@ ARCH="arm64"
 
 SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
 CC="$(xcrun --sdk iphoneos -f clang)"
-COMMON_FLAGS="-arch $ARCH -isysroot $SDK -miphoneos-version-min=$MIN_IOS -O2 -fPIC"
+COMMON_FLAGS="-target arm64-apple-ios$MIN_IOS -arch $ARCH -isysroot $SDK -miphoneos-version-min=$MIN_IOS -O2 -fPIC"
 
 mkdir -p "$VENDOR/lib" "$VENDOR/include/silk" "$WORK"
 
