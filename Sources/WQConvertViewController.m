@@ -446,7 +446,7 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls
 
     [[NSFileManager defaultManager] removeItemAtURL:output error:nil];
     session.outputURL = output;
-    session.outputFileType = AVFileTypeM4A;
+    session.outputFileType = AVFileTypeAppleM4A;
 
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [session exportAsynchronouslyWithCompletionHandler:^{
