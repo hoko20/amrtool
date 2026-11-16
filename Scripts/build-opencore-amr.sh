@@ -24,7 +24,8 @@ COMMON_FLAGS="-target arm64-apple-ios$MIN_IOS -arch $ARCH -isysroot $SDK -miphon
 check_ios_archive() {
   local info
   info="$(otool -l "$1" 2>/dev/null)"
-  if [[ -z "$info" ]] || ! grep -Eq "platform IOS|LC_VERSION_MIN_IPHONEOS" <<<"$info" || grep -q "platform MACOS" <<<"$info"; then
+  # otool 对 LC_BUILD_VERSION 输出数字：1=macOS，2=iOS
+  if [[ -z "$info" ]] || ! grep -Eq "platform (IOS|2)|LC_VERSION_MIN_IPHONEOS" <<<"$info" || grep -Eq "platform (MACOS|1)" <<<"$info"; then
     echo "错误：$1 不是纯 iOS 目标编译产物" >&2
     grep -E "platform |LC_VERSION_MIN" <<<"$info" | sort -u | head -5 >&2
     exit 1
