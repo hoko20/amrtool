@@ -1,0 +1,14 @@
+// SandboxExplorer - edit these three values (or pass them to xcodebuild) before building.
+// `Scripts/configure.sh` rewrites this file and the entitlements in one shot.
+
+APP_BUNDLE_ID = dev.local.SandboxExplorer
+APP_GROUP_ID = group.dev.local.SandboxExplorer
+APP_DISPLAY_NAME = SandboxExplorer
+
+// Runtime container access requires iOS 26+, but the code compiles against any
+// iOS 16+ SDK so the project builds on Xcode 26.x / 27.x GitHub runners alike.
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+
+// Signing is injected by the GitHub Actions workflow (signed mode) or disabled
+// entirely (unsigned mode). Do not hardcode a team id here.
+CODE_SIGN_STYLE = Manual

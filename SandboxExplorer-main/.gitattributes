@@ -1,0 +1,19 @@
+# Keep shell/python/workflow files with Unix line endings so the macOS runner
+# can execute them directly after a Windows-side push.
+* text=auto
+
+*.sh        text eol=lf
+*.py        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.pbxproj   text eol=lf
+*.plist     text eol=lf
+*.xcconfig  text eol=lf
+*.entitlements text eol=lf
+*.template  text eol=lf
+*.m         text eol=lf
+*.h         text eol=lf
+*.md        text eol=lf
+LICENSE     text eol=lf
+
+*.ps1       text eol=crlf

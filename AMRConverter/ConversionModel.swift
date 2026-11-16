@@ -36,6 +36,37 @@ enum OutputFormat: String, CaseIterable, Identifiable {
         case .m4a:        return "m4a"
         }
     }
+
+    var sampleRateText: String {
+        switch self {
+        case .silk: return "24 kHz"
+        case .nb:   return "8 kHz"
+        case .wb:   return "16 kHz"
+        case .m4a:  return "跟随源文件"
+        }
+    }
+
+    var bitrateText: String {
+        switch self {
+        case .silk: return "25 kbps 单声道"
+        case .nb:   return "12.2 kbps 单声道"
+        case .wb:   return "23.85 kbps 单声道"
+        case .m4a:  return "AAC 96 kbps"
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .silk:
+            return "微信、QQ 语音条的原生格式，音质好、体积小；部分老设备或只认 AMR 的语音网关不支持。"
+        case .nb:
+            return "兼容性最好，任何语音平台基本都能识别；只有 8kHz 电话音质，这是 AMR-NB 的上限。"
+        case .wb:
+            return "AMR 家族最高档，16kHz 宽带语音，比 NB 明显清晰；个别老网关只接受 NB。"
+        case .m4a:
+            return "AAC 96kbps，接近原始音质，适合通用播放、分享与存档；不是 AMR 格式。"
+        }
+    }
 }
 
 struct OutputFile: Identifiable, Hashable {
