@@ -55,7 +55,12 @@ cd "$WORK/opencore-amr-0.1.6"
 make -j"$(sysctl -n hw.ncpu)"
 make install
 cp "$WORK/prefix-opencore/lib/libopencore-amrnb.a" "$VENDOR/lib/"
-cp "$WORK/prefix-opencore/include/opencore-amr/interf_enc.h" "$VENDOR/include/"
+NB_HEADER="$(find "$WORK/prefix-opencore" -name 'interf_enc.h' | head -1)"
+if [[ -z "$NB_HEADER" ]]; then
+  echo "找不到 interf_enc.h" >&2
+  exit 1
+fi
+cp "$NB_HEADER" "$VENDOR/include/"
 
 # ---------- vo-amrwbenc（AMR-WB 编码） ----------
 
@@ -71,7 +76,12 @@ cd "$WORK/vo-amrwbenc-0.1.3"
 make -j"$(sysctl -n hw.ncpu)"
 make install
 cp "$WORK/prefix-amrwbenc/lib/libvo-amrwbenc.a" "$VENDOR/lib/"
-cp "$WORK/prefix-amrwbenc/include/vo-amrwbenc/enc_if.h" "$VENDOR/include/"
+WB_HEADER="$(find "$WORK/prefix-amrwbenc" -name 'enc_if.h' | head -1)"
+if [[ -z "$WB_HEADER" ]]; then
+  echo "找不到 enc_if.h" >&2
+  exit 1
+fi
+cp "$WB_HEADER" "$VENDOR/include/"
 
 # ---------- silk-v3-decoder（SILK 编码） ----------
 
