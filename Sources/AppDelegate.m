@@ -4,6 +4,7 @@
 //
 
 #import "AFUI.h"
+#import <math.h>
 
 #pragma mark - 共用辅助
 
@@ -137,6 +138,33 @@ NSURL *AFUniqueOutputURL(NSString *baseName, NSString *extension)
 void AFCopyToPasteboard(NSString *text)
 {
     [UIPasteboard generalPasteboard].string = text ?: @"";
+}
+
+void AFSetTableHeaderText(UITableView *tableView, NSString *text)
+{
+    CGFloat width = tableView.bounds.size.width;
+    if (width <= 0) width = UIScreen.mainScreen.bounds.size.width;
+
+    UIView *container = [[UIView alloc] initWithFrame:CGRectZero];
+    UILabel *label = [UILabel new];
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.numberOfLines = 0;
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    label.textColor = UIColor.secondaryLabelColor;
+    label.text = text;
+    [container addSubview:label];
+    [NSLayoutConstraint activateConstraints:@[
+        [label.leadingAnchor constraintEqualToAnchor:container.leadingAnchor constant:20],
+        [label.trailingAnchor constraintEqualToAnchor:container.trailingAnchor constant:-20],
+        [label.topAnchor constraintEqualToAnchor:container.topAnchor constant:12],
+        [label.bottomAnchor constraintEqualToAnchor:container.bottomAnchor constant:-12],
+    ]];
+
+    CGSize fitted = [container systemLayoutSizeFittingSize:CGSizeMake(width, UILayoutFittingCompressedSize.height)
+                          withHorizontalFittingPriority:UILayoutPriorityRequired
+                                verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+    container.frame = CGRectMake(0, 0, width, ceil(fitted.height));
+    tableView.tableHeaderView = container;
 }
 
 void AFPresentAlert(UIViewController *from, NSString *title, NSString *message)

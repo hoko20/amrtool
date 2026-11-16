@@ -6,11 +6,14 @@
 //
 
 #import "AFUI.h"
+#import <math.h>
 
 @interface AFFilesViewController ()
 @property (nonatomic, copy) NSArray<NSString *> *files;
+@property (nonatomic) CGFloat lastHeaderWidth;
 
 - (void)reloadFiles;
+- (void)refreshHeader;
 - (void)shareFileAtIndex:(NSInteger)index fromCell:(UIView *)cell;
 - (void)deleteFileAtIndex:(NSInteger)index;
 - (void)renameFileAtIndex:(NSInteger)index;
@@ -33,12 +36,30 @@
     self.navigationItem.title = @"输出文件";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 56;
+    [self refreshHeader];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self refreshHeader];
     [self reloadFiles];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    CGFloat width = self.tableView.bounds.size.width;
+    if (width > 0 && fabs(width - self.lastHeaderWidth) > 0.5) {
+        [self refreshHeader];
+    }
+}
+
+- (void)refreshHeader
+{
+    self.lastHeaderWidth = self.tableView.bounds.size.width;
+    AFSetTableHeaderText(self.tableView,
+                         [NSString stringWithFormat:@"输出目录\n%@", AFDocumentsPath()]);
 }
 
 - (void)reloadFiles

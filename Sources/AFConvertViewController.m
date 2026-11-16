@@ -8,6 +8,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <PhotosUI/PhotosUI.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#import <math.h>
 
 #import "AFUI.h"
 #import "AMREncoder.h"
@@ -19,11 +20,15 @@
 @property (nonatomic, copy) NSString *currentName;
 @property (nonatomic, copy) NSString *statusText;
 @property (nonatomic, copy) NSString *errorText;
+@property (nonatomic) CGFloat lastHeaderWidth;
 
 - (void)startConversionWithURL:(NSURL *)url displayName:(NSString *)displayName;
 - (AMROutputFormat)amrFormatFor:(AFOutputFormat)format;
 - (BOOL)exportM4AFromURL:(NSURL *)input toURL:(NSURL *)output error:(NSError **)error;
 - (NSURL *)temporaryCopyOfURL:(NSURL *)url error:(NSError **)error;
+- (void)refreshHeader;
+- (NSString *)headerText;
+- (void)refresh:(id)sender;
 @end
 
 @implementation AFConvertViewController
@@ -45,12 +50,49 @@
     self.navigationItem.title = @"AudioForge";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
+    [self refreshHeader];
+
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+                                                      target:self
+                                                      action:@selector(refresh:)];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self refreshHeader];
     [self.tableView reloadData];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    CGFloat width = self.tableView.bounds.size.width;
+    if (width > 0 && fabs(width - self.lastHeaderWidth) > 0.5) {
+        [self refreshHeader];
+    }
+}
+
+- (void)refresh:(id)sender
+{
+    [self refreshHeader];
+    [self.tableView reloadData];
+}
+
+- (NSString *)headerText
+{
+    return [NSString stringWithFormat:
+            @"把 MP3 / MP4 / M4A / MOV / WAV 转换为语音文件，也可从相册选择视频。\n"
+            @"当前格式：%@（%@）\n"
+            @"所有转换都在本机完成，不会上传任何音频。",
+            AFFormatTitle(self.format), AFFormatSubtitle(self.format)];
+}
+
+- (void)refreshHeader
+{
+    self.lastHeaderWidth = self.tableView.bounds.size.width;
+    AFSetTableHeaderText(self.tableView, [self headerText]);
 }
 
 #pragma mark - 分区
@@ -295,6 +337,7 @@
                                                       handler:^(UIAlertAction *item) {
             self.format = format;
             AFSetCurrentFormat(format);
+            [self refreshHeader];
             [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1]
                           withRowAnimation:UITableViewRowAnimationAutomatic];
         }];

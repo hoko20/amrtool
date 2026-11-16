@@ -53,6 +53,7 @@ void AFSetCurrentFormat(AFOutputFormat format);
 
 void AFPresentAlert(UIViewController *from, NSString *title, NSString *message);
 void AFCopyToPasteboard(NSString *text);
+void AFSetTableHeaderText(UITableView *tableView, NSString *text);
 NSArray<NSString *> *AFOutputFileNames(void);
 NSString *AFSanitizedBaseName(NSString *name);
 NSURL *AFUniqueOutputURL(NSString *baseName, NSString *extension);

@@ -45,6 +45,24 @@ willConnectToSession:(UISceneSession *)session
     UITabBarController *tabBar = [UITabBarController new];
     tabBar.viewControllers = tabs.copy;
     tabBar.tabBar.tintColor = AFAccentColor();
+    tabBar.tabBar.unselectedItemTintColor = UIColor.secondaryLabelColor;
+
+    UITabBarAppearance *appearance = [UITabBarAppearance new];
+    [appearance configureWithOpaqueBackground];
+    appearance.backgroundColor = UIColor.systemBackgroundColor;
+    appearance.shadowColor = UIColor.separatorColor;
+    tabBar.tabBar.standardAppearance = appearance;
+    tabBar.tabBar.scrollEdgeAppearance = appearance;
+
+    UINavigationBarAppearance *navAppearance = [UINavigationBarAppearance new];
+    [navAppearance configureWithOpaqueBackground];
+    navAppearance.backgroundColor = UIColor.systemBackgroundColor;
+    navAppearance.shadowColor = UIColor.separatorColor;
+    for (UINavigationController *nav in tabs) {
+        nav.navigationBar.standardAppearance = navAppearance;
+        nav.navigationBar.scrollEdgeAppearance = navAppearance;
+        nav.navigationBar.compactAppearance = navAppearance;
+    }
 
     self.window.rootViewController = tabBar;
     [self.window makeKeyAndVisible];
