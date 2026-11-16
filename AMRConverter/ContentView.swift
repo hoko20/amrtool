@@ -7,7 +7,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             HomeView(model: model)
-                .tabItem { Label("首页", systemImage: "waveform") }
+                .tabItem { Label("首页", systemImage: "arrow.triangle.2.circlepath") }
 
             ProfileView(model: model)
                 .tabItem { Label("我的", systemImage: "person.crop.circle") }
@@ -23,10 +23,6 @@ struct HomeView: View {
 
     @State private var picking = false
     @State private var videoItem: PhotosPickerItem?
-    @State private var renameItem: OutputFile?
-    @State private var renameText = ""
-    @State private var shareItems: [Any] = []
-    @State private var sharing = false
 
     var body: some View {
         NavigationStack {
@@ -38,16 +34,13 @@ struct HomeView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("AudioForge")
+            .toolbarTitleDisplayMode(.large)
             .sheet(isPresented: $picking) {
                 DocumentPicker { urls in
                     picking = false
                     model.convert(urls: urls)
                 }
                 .ignoresSafeArea()
-            }
-            .sheet(isPresented: $sharing) {
-                ShareSheet(items: shareItems)
-                    .ignoresSafeArea()
             }
             .onChange(of: videoItem) { _, item in
                 guard let item else { return }
@@ -63,20 +56,6 @@ struct HomeView: View {
                         model.errorText = "相册读取失败：\(error.localizedDescription)"
                     }
                 }
-            }
-            .alert("重命名", isPresented: Binding(
-                get: { renameItem != nil },
-                set: { if !$0 { renameItem = nil } }
-            )) {
-                TextField("文件名", text: $renameText)
-                Button("保存") {
-                    if let item = renameItem {
-                        model.rename(item, to: renameText)
-                    }
-                }
-                Button("取消", role: .cancel) { }
-            } message: {
-                Text("只修改文件名，扩展名保持不变")
             }
         }
     }
@@ -167,35 +146,19 @@ struct HomeView: View {
 
     private var outputSection: some View {
         Section {
-            if model.outputs.isEmpty {
-                Text("还没有输出文件")
-                    .foregroundStyle(.secondary)
-            } else {
-                OutputListView(outputs: model.outputs,
-                               onShare: { item in
-                                   shareItems = [item.url]
-                                   sharing = true
-                               },
-                               onRename: { item in
-                                   renameText = item.url.deletingPathExtension().lastPathComponent
-                                   renameItem = item
-                               },
-                               onDelete: { item in
-                                   model.delete(item)
-                               })
-                    .frame(height: OutputListView.height(for: model.outputs.count))
-                    .listRowInsets(EdgeInsets())
+            NavigationLink {
+                OutputFilesView(model: model)
+            } label: {
+                DetailRow(title: "输出文件",
+                          subtitle: model.outputs.isEmpty
+                              ? "还没有文件"
+                              : "\(model.outputs.count) 个文件 · 点击查看",
+                          showsDisclosure: false)
             }
         } header: {
-            HStack {
-                Text("输出文件")
-                Spacer()
-                Text("\(model.outputs.count) 个")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
+            Text("输出文件")
         } footer: {
-            Text("输出区高度固定，文件多时在区域内滚动；左滑可分享、重命名或删除，点击行直接分享。文件保存在「文件」App → 我的 iPhone → AudioForge。")
+            Text("点击进入文件列表，可随时分享、重命名或删除。文件保存在「文件」App → 我的 iPhone → AudioForge。")
         }
     }
 }

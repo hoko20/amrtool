@@ -61,6 +61,7 @@ struct ProfileView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("我的")
+            .toolbarTitleDisplayMode(.large)
             .alert("清空全部输出文件？", isPresented: $confirmClear) {
                 Button("清空", role: .destructive) { model.deleteAll() }
                 Button("取消", role: .cancel) { }
