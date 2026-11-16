@@ -36,7 +36,7 @@ struct HomeView: View {
                 outputSection
             }
             .listStyle(.insetGrouped)
-            .navigationTitle("语音转音频")
+            .navigationTitle("AudioForge")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     PhotosPicker(selection: $videoItem, matching: .videos) {
