@@ -102,7 +102,8 @@
     if (self.files.count == 0) return nil;
     uint64_t total = 0;
     for (NSInteger i = 0; i < (NSInteger)self.files.count; i++) {
-        total += [self attributesAtIndex:i][NSFileSize].unsignedLongLongValue;
+        NSNumber *size = [self attributesAtIndex:i][NSFileSize];
+        total += size.unsignedLongLongValue;
     }
     return [NSString stringWithFormat:@"共 %lu 个文件 · %@",
             (unsigned long)self.files.count, WQFormatBytes(total)];
@@ -114,10 +115,12 @@
     if (!cell) cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                             reuseIdentifier:@"Cell"];
     NSDictionary *attributes = [self attributesAtIndex:indexPath.row];
+    NSNumber *size = attributes[NSFileSize];
+    NSDate *date = attributes[NSFileModificationDate];
     cell.textLabel.text = self.files[indexPath.row];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ · %@",
-        WQFormatBytes([attributes[NSFileSize] unsignedLongLongValue]),
-        WQFormatDate([attributes[NSFileModificationDate] timeIntervalSince1970])];
+        WQFormatBytes(size.unsignedLongLongValue),
+        WQFormatDate(date.timeIntervalSince1970)];
     cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;

@@ -138,9 +138,11 @@ typedef NS_ENUM(NSInteger, WQConvertSection) {
         NSArray<NSString *> *files = WQAudioOutputFiles();
         uint64_t total = 0;
         for (NSString *name in files) {
-            total += [NSFileManager.defaultManager
-                      attributesOfItemAtPath:[WQAudioOutputDirectory() stringByAppendingPathComponent:name]
-                                       error:nil][NSFileSize].unsignedLongLongValue;
+            NSDictionary *attributes = [NSFileManager.defaultManager
+                attributesOfItemAtPath:[WQAudioOutputDirectory() stringByAppendingPathComponent:name]
+                                 error:nil];
+            NSNumber *size = attributes[NSFileSize];
+            total += size.unsignedLongLongValue;
         }
         cell.textLabel.text = @"转换输出";
         cell.detailTextLabel.text = files.count
